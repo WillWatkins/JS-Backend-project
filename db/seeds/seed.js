@@ -52,7 +52,39 @@ const seed = (data) => {
         created_at TIMESTAMP NOT NULL,
         body VARCHAR NOT NULL
       );`);
-    });
+    })
+    .then(() => {
+      // 3. Insert data
+      const formattedCategoryData = formatCategoryData(categoryData);
+      const sqlCategoriesQuery = format(
+        `INSERT INTO categories (slug, description) VALUES %L;`,
+        formattedCategoryData
+      );
+      return db.query(sqlCategoriesQuery);
+    })
+    .then(() => {
+      const formattedUsersData = formatUsersData(userData);
+      const sqlUsersQuery = format(
+        `INSERT INTO users (username, name, avatar_url) VALUES %L`,
+        formattedUsersData
+      );
+      return db.query(sqlUsersQuery);
+    })
+    .then(() => {
+      const formattedReviewsData = formatReviewsData(reviewData);
+      const sqlReviewsQuery = format(
+        `INSERT INTO reviews (title, designer, owner, review_img_url, review_body, category, created_at,votes) VALUES %L;`,
+        formattedReviewsData
+      );
+      return db.query(sqlReviewsQuery);
+    })
+    .then(() => {});
+  // .then(() => {
+  //   return db.query(`SELECT * FROM reviews;`);
+  // })
+  // .then(({ rows }) => {
+  //   console.log(rows);
+  // });
 };
 
 module.exports = seed;
