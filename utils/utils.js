@@ -20,7 +20,6 @@ exports.formatReviewsData = (array) => {
   if (array === undefined || array.length < 1) return [];
   else {
     const sqlInsert = array.map((review) => {
-      console.log(review.created_at);
       return [
         review.title,
         review.designer,
@@ -35,6 +34,19 @@ exports.formatReviewsData = (array) => {
     return sqlInsert;
   }
 };
-exports.categoryReferences = (array) => {
-  return {};
+
+exports.formatCommentsData = (array) => {
+  if (array === undefined || array.length < 1) return [];
+  else {
+    const sqlInput = array.map((comment) => {
+      return [
+        comment.body,
+        comment.votes,
+        comment.author,
+        comment.review_id,
+        comment.created_at,
+      ];
+    });
+    return sqlInput;
+  }
 };

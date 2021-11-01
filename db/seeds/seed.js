@@ -36,7 +36,7 @@ const seed = (data) => {
         title VARCHAR NOT NULL,
         review_body VARCHAR NOT NULL,
         designer VARCHAR NOT NULL,
-        review_img_url VARCHAR,
+        review_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg',
         votes INT NOT NULL DEFAULT 0,
         category VARCHAR REFERENCES categories(slug) NOT NULL,
         owner VARCHAR REFERENCES users(username) NOT NULL,
@@ -73,12 +73,14 @@ const seed = (data) => {
     .then(() => {
       const formattedReviewsData = formatReviewsData(reviewData);
       const sqlReviewsQuery = format(
-        `INSERT INTO reviews (title, designer, owner, review_img_url, review_body, category, created_at,votes) VALUES %L;`,
+        `INSERT INTO reviews (title, designer, owner, review_img_url, review_body, category, created_at,votes) VALUES %L RETURNING*;`,
         formattedReviewsData
       );
       return db.query(sqlReviewsQuery);
     })
-    .then(() => {});
+    .then(({ rows }) => {
+      console.log(rows);
+    });
   // .then(() => {
   //   return db.query(`SELECT * FROM reviews;`);
   // })
@@ -88,3 +90,12 @@ const seed = (data) => {
 };
 
 module.exports = seed;
+
+// ['Culture a Love of Agriculture With Agricola',
+// 'Uwe Rosenberg',
+// 'tickle122',
+//  'https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+//  'You could sum up Agricola with the simple phrase ''Farmyeard Fun'' but the mechanics and game play add so much more than that. You''ll find yourself torn between breeding pigs, or sowing crops. Its joyeous and rewarding and it makes you think of time spent outside, which is much harder to do these days!',
+//  'strategy',
+//  '2021-01-18 10:00:20. 514+00',
+//  '1']

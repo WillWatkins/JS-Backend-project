@@ -1,8 +1,11 @@
+const format = require("pg-format");
 const {
   formatCategoryData,
   formatUsersData,
   formatReviewsData,
+  formatCommentsData,
 } = require("../utils/utils");
+
 describe("formatCategoryData", () => {
   test("returns an empty array when passed an empty array", () => {
     expect(formatCategoryData([])).toEqual([]);
@@ -282,17 +285,91 @@ describe("formatReviewsData", () => {
     ]);
   });
 });
-// describe("categoryReferences", () => {
-//   test("returns an empty obect when passed an empty array", () => {
-//     expect(categoryReferences([])).toEqual({});
-//   });
-//   test("returns an object with one key-value pair when passed an array with one item", () => {
-//     const input = [
-//       {
-//         slug: "euro game",
-//         description: "Abstact games that involve little luck",
-//       },
-//     ];
-//     const output = { }
-//   });
-// });
+
+describe("formatCommentsData", () => {
+  test("returns an empty array", () => {
+    expect(formatCommentsData([])).toEqual([]);
+  });
+  test("returns an array with a single array inside, with formatted data for insertion into comments table", () => {
+    const input = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+    ];
+    const output = [
+      ["I loved this game too!", 16, "bainesface", 2, new Date(1511354613389)],
+    ];
+
+    expect(formatCommentsData(input)).toEqual(output);
+  });
+  test("returns an array of arrays with formatted data", () => {
+    const input = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+      {
+        body: "My dog loved this game too!",
+        votes: 13,
+        author: "mallionaire",
+        review_id: 3,
+        created_at: new Date(1610964545410),
+      },
+      {
+        body: "I didn't know dogs could play games",
+        votes: 10,
+        author: "philippaclaire9",
+        review_id: 3,
+        created_at: new Date(1610964588110),
+      },
+    ];
+
+    const output = [
+      ["I loved this game too!", 16, "bainesface", 2, new Date(1511354613389)],
+      [
+        "My dog loved this game too!",
+        13,
+        "mallionaire",
+        3,
+        new Date(1610964545410),
+      ],
+      [
+        "I didn't know dogs could play games",
+        10,
+        "philippaclaire9",
+        3,
+        new Date(1610964588110),
+      ],
+    ];
+
+    expect(formatCommentsData(input)).toEqual(output);
+  });
+  test("does not mutate input array", () => {
+    const input = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+    ];
+    formatCommentsData(input);
+    expect(input).toEqual([
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+    ]);
+  });
+});
