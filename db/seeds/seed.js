@@ -3,6 +3,7 @@ const {
   formatCategoryData,
   formatUsersData,
   formatReviewsData,
+  formatCommentsData,
 } = require("../../utils/utils");
 const format = require("pg-format");
 const seed = (data) => {
@@ -73,29 +74,23 @@ const seed = (data) => {
     .then(() => {
       const formattedReviewsData = formatReviewsData(reviewData);
       const sqlReviewsQuery = format(
-        `INSERT INTO reviews (title, designer, owner, review_img_url, review_body, category, created_at,votes) VALUES %L RETURNING*;`,
+        `INSERT INTO reviews (title, designer, owner, review_img_url, review_body, category, created_at,votes) VALUES %L;`,
         formattedReviewsData
       );
       return db.query(sqlReviewsQuery);
     })
-    .then(({ rows }) => {
-      console.log(rows);
+    .then(() => {
+      const formattedCommentsData = formatCommentsData(commentData);
+      const sqlCommentsQuery = format(
+        `INSERT INTO comments (body, votes, author, review_id,created_at) VALUES %L RETURNING*;`,
+        formattedCommentsData
+      );
+
+      return db.query(sqlCommentsQuery);
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  // .then(() => {
-  //   return db.query(`SELECT * FROM reviews;`);
-  // })
-  // .then(({ rows }) => {
-  //   console.log(rows);
-  // });
 };
 
 module.exports = seed;
-
-// ['Culture a Love of Agriculture With Agricola',
-// 'Uwe Rosenberg',
-// 'tickle122',
-//  'https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-//  'You could sum up Agricola with the simple phrase ''Farmyeard Fun'' but the mechanics and game play add so much more than that. You''ll find yourself torn between breeding pigs, or sowing crops. Its joyeous and rewarding and it makes you think of time spent outside, which is much harder to do these days!',
-//  'strategy',
-//  '2021-01-18 10:00:20. 514+00',
-//  '1']
