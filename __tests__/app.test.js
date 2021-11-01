@@ -45,6 +45,7 @@ describe("/api/reviews/:review_id", () => {
                 category: "social deduction",
                 created_at: expect.any(String),
                 votes: 5,
+                number_of_comments: 3,
               },
             ],
           });
