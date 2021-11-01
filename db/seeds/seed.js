@@ -82,10 +82,9 @@ const seed = (data) => {
     .then(() => {
       const formattedCommentsData = formatCommentsData(commentData);
       const sqlCommentsQuery = format(
-        `INSERT INTO comments (body, votes, author, review_id,created_at) VALUES %L RETURNING*;`,
+        `INSERT INTO comments (body, votes, author, review_id,created_at) VALUES %L;`,
         formattedCommentsData
       );
-
       return db.query(sqlCommentsQuery);
     })
     .catch((err) => {
@@ -93,4 +92,4 @@ const seed = (data) => {
     });
 };
 
-module.exports = seed;
+module.exports = { seed };

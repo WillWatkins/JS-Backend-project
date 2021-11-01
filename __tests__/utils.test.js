@@ -1,4 +1,3 @@
-const format = require("pg-format");
 const {
   formatCategoryData,
   formatUsersData,
