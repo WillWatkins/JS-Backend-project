@@ -11,20 +11,14 @@ exports.selectReviewById = (id) => {
   });
 };
 
-// exports.selectArticles = (id) => {
-//   const queryStr = `
-//         SELECT
-//             articles.*,
-//             COUNT(c.author) AS comment_count
-//         FROM articles
-//         LEFT OUTER JOIN comments AS c ON articles.article_id = c.article_id
-//         WHERE articles.article_id = $1 GROUP BY articles.article_id
-//     `;
-
-//   return db.query(queryStr, [id]).then(({ rows }) => rows[0]);
-// };
-
-//SELECT animals.*, COUNT(northcoder_id) AS number_of_fans
-// FROM animals
-// LEFT JOIN northcoders ON northcoders.favourite_animal_id = animals.animal_id
-// GROUP BY animal_id;
+exports.updateVotesInModelById = (id, voteChange) => {
+  //if (![Number]) return Promise.reject()
+  const queryString = `
+  UPDATE reviews
+  SET votes = votes + ${voteChange}
+  WHERE review_id = ${id}
+  RETURNING*;`;
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
+};
