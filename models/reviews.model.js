@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../utils/utils");
 
 exports.selectReviewById = (id) => {
   const queryString = `SELECT reviews.*, COUNT(comments.review_id)::int AS comment_count
@@ -60,7 +61,8 @@ exports.selectReviews = (sort_by = "created_at", order = "ASC", category) => {
 
   return db.query(queryString, queryParams).then(({ rows }) => {
     if (rows.length < 1) {
-      return Promise.reject({ status: 400, message: "Bad request" });
+      console.log(category);
+      return checkExists("categories", "slug", category);
     }
     return rows;
   });

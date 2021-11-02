@@ -1,3 +1,6 @@
+const db = require("../db/connection");
+const format = require("pg-format");
+
 exports.formatCategoryData = (array) => {
   if (array === undefined || array.length < 1) return [];
   else {
@@ -49,4 +52,16 @@ exports.formatCommentsData = (array) => {
     });
     return sqlInput;
   }
+};
+
+exports.checkExists = (table, column, value) => {
+  const queryStr = format("SELECT * FROM %I WHERE %I = $1;", table, column);
+
+  return db.query(queryStr, [value]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return Promise.reject({ status: 404, message: "Resource not found" });
+    } else {
+      return [];
+    }
+  });
 };

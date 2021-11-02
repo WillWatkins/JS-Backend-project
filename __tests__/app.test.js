@@ -100,13 +100,22 @@ describe("/api/reviews", () => {
           });
         });
     });
-    test("status: 400, returns an error when input an invalid category", () => {
+    test("status: 404, returns an error when input an invalid category", () => {
       const invalidCategory = "NotValid";
       return request(app)
         .get(`/api/reviews?category=${invalidCategory}`)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("Bad request");
+          expect(body.message).toBe("Resource not found");
+        });
+    });
+    test("status: 200, returns an empty array when passed a category that exists but has no reviews in that category", () => {
+      const category = "children's games";
+      return request(app)
+        .get(`/api/reviews?category=${category}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toEqual([]);
         });
     });
   });
