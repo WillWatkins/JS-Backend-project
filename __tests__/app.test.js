@@ -16,10 +16,39 @@ describe("/api/categories", () => {
         .then(({ body }) => {
           expect(body.categories.length).toBe(4);
           body.categories.forEach((category) => {
-            expect(category).toEqual({
-              slug: expect.any(String),
-              description: expect.any(String),
-            });
+            expect(category).toEqual(
+              expect.objectContaining({
+                slug: expect.any(String),
+                description: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+});
+describe("/api/reviews", () => {
+  describe("GET", () => {
+    test("status:200 returns an array reviews", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews.length).toBe(13);
+          body.reviews.forEach((review) => {
+            expect(review).toEqual(
+              expect.objectContaining({
+                review_id: expect.any(Number),
+                title: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_img_url: expect.any(String),
+                review_body: expect.any(String),
+                category: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
           });
         });
     });
@@ -49,6 +78,22 @@ describe("/api/reviews/:review_id", () => {
               },
             ],
           });
+        });
+    });
+    test("status:400, returns an error if the review does not exist", () => {
+      return request(app)
+        .get("/api/reviews/9999")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid path");
+        });
+    });
+    test("status:400, returns an error if input an invalid review_id", () => {
+      return request(app)
+        .get("/api/reviews/notValid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
@@ -87,7 +132,7 @@ describe("/api/reviews/:review_id", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test("status 400, returns an error when provided no body", () => {
+    test("status:400, returns an error when provided no body", () => {
       return request(app)
         .patch("/api/reviews/3")
         .send({})

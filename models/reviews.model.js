@@ -7,6 +7,9 @@ exports.selectReviewById = (id) => {
     WHERE reviews.review_id = $1
     GROUP BY reviews.review_id;`;
   return db.query(queryString, [id]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return Promise.reject({ status: 400, message: "Invalid path" });
+    }
     return rows;
   });
 };
@@ -20,6 +23,14 @@ exports.updateVotesInModelById = (id, voteChange) => {
   SET votes = votes + ${voteChange}
   WHERE review_id = ${id}
   RETURNING*;`;
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
+};
+
+exports.selectReviews = () => {
+  const queryString = `SELECT * FROM reviews`;
+
   return db.query(queryString).then(({ rows }) => {
     return rows;
   });
