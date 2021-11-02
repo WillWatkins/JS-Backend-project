@@ -12,7 +12,9 @@ exports.selectReviewById = (id) => {
 };
 
 exports.updateVotesInModelById = (id, voteChange) => {
-  //if (![Number]) return Promise.reject()
+  if (!id.match(/[0-9]*/) || typeof voteChange !== "number") {
+    return Promise.reject({ status: 400, message: "Bad request" });
+  }
   const queryString = `
   UPDATE reviews
   SET votes = votes + ${voteChange}
