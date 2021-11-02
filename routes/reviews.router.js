@@ -8,6 +8,7 @@ const {
 
 reviewsRouter.route("/:review_id").get(getReviewById).patch(updateVotesById);
 reviewsRouter.route("/").get(getReviews);
-reviewsRouter.route("/:review_id/comments").post(addCommentToReview);
+reviewsRouter.route("/:review_id/comments");
+//.post(addCommentToReview);
 
 module.exports = { reviewsRouter };

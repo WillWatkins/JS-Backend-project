@@ -28,11 +28,20 @@ exports.updateVotesById = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectReviews()
+  const { sort_by, order } = req.query;
+  selectReviews(sort_by, order)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
     .catch(next);
 };
 
-exports.addCommentToReview = (req, res, next) => {};
+// exports.addCommentToReview = (req, res, next) => {
+//   const { review_id } = req.params;
+//   const comment = req.body;
+//   postComment(review_id, comment)
+//     .then((body) => {
+//       res.status(201).send({ body });
+//     })
+//     .catch(next);
+// };

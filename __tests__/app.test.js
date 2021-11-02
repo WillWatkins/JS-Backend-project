@@ -28,8 +28,8 @@ describe("/api/categories", () => {
   });
 });
 describe("/api/reviews", () => {
-  describe("GET", () => {
-    test("status:200 returns an array reviews", () => {
+  describe.only("GET", () => {
+    test("status:200, returns an array of reviews", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -47,9 +47,45 @@ describe("/api/reviews", () => {
                 category: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
+                comment_count: expect.any(Number),
               })
             );
           });
+        });
+    });
+    test("status:200, returns an array ordered by the input sort_by", () => {
+      const sortBy = "owner";
+      return request(app)
+        .get(`/api/reviews?sort_by=${sortBy}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeSortedBy(sortBy);
+        });
+    });
+    test("status:400, returns an error when input an invalid sory_by", () => {
+      const sort_by = "invalidSort";
+      return request(app)
+        .get(`/api/reviews?sort_by=${sort_by}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:200, returns an descending ordered array when input desc", () => {
+      return request(app)
+        .get("/api/reviews?order=desc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("status:400, returns an error when input an invalid order", () => {
+      const invalidOrder = "InvalidOrder";
+      return request(app)
+        .get(`/api/reviews?order=${invalidOrder}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
@@ -74,7 +110,7 @@ describe("/api/reviews/:review_id", () => {
                 category: "social deduction",
                 created_at: expect.any(String),
                 votes: 5,
-                number_of_comments: "3",
+                comment_count: 3,
               },
             ],
           });
@@ -167,4 +203,36 @@ describe("/api/reviews/:review_id", () => {
         });
     });
   });
+});
+describe("api/reviews/:review_id/comments", () => {
+  // describe("POST", () => {
+  //   test("status:200, returns the added comment", () => {
+  //     const reviewId = 1;
+  //     return request(app)
+  //       .post(`/api/reviews/${reviewId}/comments`)
+  //       .send({
+  //         body: "ADDED COMMENT TEST",
+  //         votes: 9999,
+  //         author: "TESTER",
+  //         review_id: 3,
+  //         created_at: new Date(1610964545410),
+  //       })
+  //       .expect(200)
+  //       .then(({ body }) => {
+  //         expect(body).toEqual(
+  //           expect.objectContaining({
+  //             comment_id: 14,
+  //             body: "ADDED COMMENT TEST",
+  //             votes: 9999,
+  //             author: "TESTER",
+  //             review_id: 3,
+  //             created_at: expect.any(String),
+  //           })
+  //         );
+  //         //Check that the body sent back is the input comment WITH A COMMENT ID
+  //         //New request to check comment is added to list
+  //         return request();
+  //       });
+  //   });
+  // });
 });
