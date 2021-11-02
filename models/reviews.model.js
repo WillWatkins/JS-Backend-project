@@ -28,15 +28,8 @@ exports.updateVotesInModelById = (id, voteChange) => {
   });
 };
 
-exports.selectReviews = (sort_by = "created_at", order = "asc") => {
-  //const queryParams = [];
-
-  //Cast a function output with :: e.g. below
-  let queryString = `SELECT reviews.*, COUNT(comments.review_id)::int AS comment_count
-    FROM reviews
-    LEFT JOIN comments ON comments.review_id = reviews.review_id
-    GROUP BY reviews.review_id`;
-
+exports.selectReviews = (sort_by = "created_at", order = "ASC", category) => {
+  const queryParams = [];
   if (
     ![
       "created_at",
@@ -49,13 +42,26 @@ exports.selectReviews = (sort_by = "created_at", order = "asc") => {
   ) {
     return Promise.reject({ status: 400, message: "Bad request" });
   }
-  if (!["asc", "desc"].includes(order)) {
+  if (!["asc", "ASC", "desc", "DESC"].includes(order)) {
     return Promise.reject({ status: 400, message: "Bad request" });
   }
-  //queryParams.push(sort_by);
-  queryString += ` ORDER BY ${sort_by} ${order}`;
 
-  return db.query(queryString).then(({ rows }) => {
+  //Cast a function output with :: e.g. below
+  let queryString = `SELECT reviews.*, COUNT(comments.review_id)::int AS comment_count
+    FROM reviews
+    LEFT JOIN comments ON comments.review_id = reviews.review_id`;
+
+  if (category) {
+    queryParams.push(category);
+    queryString += ` WHERE category=$1`;
+  }
+
+  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+
+  return db.query(queryString, queryParams).then(({ rows }) => {
+    if (rows.length < 1) {
+      return Promise.reject({ status: 400, message: "Bad request" });
+    }
     return rows;
   });
 };

@@ -88,6 +88,27 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
+    test("status:200, returns an array of reviews filtered to a category", () => {
+      const category = "dexterity";
+      return request(app)
+        .get(`/api/reviews?category=${category}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews.length).toEqual(1);
+          body.reviews.forEach((review) => {
+            expect(review.category).toEqual(category);
+          });
+        });
+    });
+    test("status: 400, returns an error when input an invalid category", () => {
+      const invalidCategory = "NotValid";
+      return request(app)
+        .get(`/api/reviews?category=${invalidCategory}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
   });
 });
 describe("/api/reviews/:review_id", () => {
