@@ -277,7 +277,7 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
   });
-  describe.only("POST", () => {
+  describe("POST", () => {
     test("status:200, returns the added comment, has a check for ensuring comment is added to db", () => {
       const reviewId = 2;
       return request(app)
@@ -304,6 +304,28 @@ describe("/api/reviews/:review_id/comments", () => {
             .then(({ body }) => {
               expect(body.comments.length).toBe(4);
             });
+        });
+    });
+    test.todo(
+      "status: 400, returns an error when input an invalid author (username does not exist in db)"
+    );
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  describe.only("DELETE", () => {
+    test("status:204, returns nothing but deletes comment from db", () => {
+      //If changing the commentId, check the number of comments in the comments table that match the comment_id and update the numberOfComments to be that, otherwise test will fail.
+      const commentId = 1;
+      const numberOfComments = 5;
+      return request(app)
+        .delete(`/api/comments/${commentId}`)
+        .expect(204)
+        .then(() => {
+          return db.query("SELECT * FROM comments;");
+        })
+        .then(({ rows }) => {
+          expect(rows.length).toBe(numberOfComments);
         });
     });
   });

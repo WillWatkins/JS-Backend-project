@@ -9,10 +9,8 @@ const {
 
 reviewsRouter.route("/").get(getReviews);
 
-//New router for /:review_id?
 reviewsRouter.route("/:review_id").get(getReviewById).patch(updateVotesById);
 
-//New router for comments?
 reviewsRouter
   .route("/:review_id/comments")
   .get(getCommentsByReviewId)
