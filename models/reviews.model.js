@@ -61,8 +61,17 @@ exports.selectReviews = (sort_by = "created_at", order = "ASC", category) => {
 
   return db.query(queryString, queryParams).then(({ rows }) => {
     if (rows.length < 1) {
-      console.log(category);
       return checkExists("categories", "slug", category);
+    }
+    return rows;
+  });
+};
+
+exports.selectCommentsByReviewId = (id) => {
+  let queryString = `SELECT * FROM comments WHERE review_id = $1`;
+  return db.query(queryString, [id]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return checkExists("reviews", "review_id", id);
     }
     return rows;
   });

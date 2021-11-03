@@ -4,11 +4,16 @@ const {
   updateVotesById,
   getReviews,
   addCommentToReview,
+  getCommentsByReviewId,
 } = require("../controllers/reviews.controller.js");
 
-reviewsRouter.route("/:review_id").get(getReviewById).patch(updateVotesById);
 reviewsRouter.route("/").get(getReviews);
-reviewsRouter.route("/:review_id/comments");
+
+//New router for /:review_id?
+reviewsRouter.route("/:review_id").get(getReviewById).patch(updateVotesById);
+
+//New router for comments?
+reviewsRouter.route("/:review_id/comments").get(getCommentsByReviewId);
 //.post(addCommentToReview);
 
 module.exports = { reviewsRouter };

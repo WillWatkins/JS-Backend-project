@@ -28,7 +28,7 @@ describe("/api/categories", () => {
   });
 });
 describe("/api/reviews", () => {
-  describe.only("GET", () => {
+  describe("GET", () => {
     test("status:200, returns an array of reviews", () => {
       return request(app)
         .get("/api/reviews")
@@ -235,6 +235,47 @@ describe("/api/reviews/:review_id", () => {
   });
 });
 describe("api/reviews/:review_id/comments", () => {
+  describe.only("GET", () => {
+    test("status:200, returns an array of comments by their review_id", () => {
+      const reviewId = 2;
+      return request(app)
+        .get(`/api/reviews/${reviewId}/comments`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(3);
+
+          body.comments.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                body: expect.any(String),
+                votes: expect.any(Number),
+                author: expect.any(String),
+                review_id: expect.any(Number),
+                created_at: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+    test("status:404, returns an error if the review does not exist", () => {
+      const reviewId = 200;
+      return request(app)
+        .get(`/api/reviews/${reviewId}/comments`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Resource not found");
+        });
+    });
+    test("status:200, returns an empty array if the review_id exists but has no attributed comments yet", () => {
+      const reviewId = 5;
+      return request(app)
+        .get(`/api/reviews/${reviewId}/comments`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toEqual([]);
+        });
+    });
+  });
   // describe("POST", () => {
   //   test("status:200, returns the added comment", () => {
   //     const reviewId = 1;
