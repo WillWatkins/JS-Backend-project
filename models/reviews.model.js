@@ -77,4 +77,15 @@ exports.selectCommentsByReviewId = (id) => {
   });
 };
 
+exports.postCommentToReview = (id, comment) => {
+  const { body, author } = comment;
+
+  const queryString = `
+  INSERT INTO comments (body, author, review_id)
+  VALUES ($1 ,$2, $3) 
+  RETURNING*;`;
+  return db.query(queryString, [body, author, id]).then(({ rows }) => {
+    return rows;
+  });
+};
 //exports.postComment = (id, comment) => {};

@@ -234,8 +234,8 @@ describe("/api/reviews/:review_id", () => {
     });
   });
 });
-describe("api/reviews/:review_id/comments", () => {
-  describe.only("GET", () => {
+describe("/api/reviews/:review_id/comments", () => {
+  describe("GET", () => {
     test("status:200, returns an array of comments by their review_id", () => {
       const reviewId = 2;
       return request(app)
@@ -250,8 +250,9 @@ describe("api/reviews/:review_id/comments", () => {
                 body: expect.any(String),
                 votes: expect.any(Number),
                 author: expect.any(String),
-                review_id: expect.any(Number),
+                review_id: reviewId,
                 created_at: expect.any(String),
+                comment_id: expect.any(Number),
               })
             );
           });
@@ -276,34 +277,34 @@ describe("api/reviews/:review_id/comments", () => {
         });
     });
   });
-  // describe("POST", () => {
-  //   test("status:200, returns the added comment", () => {
-  //     const reviewId = 1;
-  //     return request(app)
-  //       .post(`/api/reviews/${reviewId}/comments`)
-  //       .send({
-  //         body: "ADDED COMMENT TEST",
-  //         votes: 9999,
-  //         author: "TESTER",
-  //         review_id: 3,
-  //         created_at: new Date(1610964545410),
-  //       })
-  //       .expect(200)
-  //       .then(({ body }) => {
-  //         expect(body).toEqual(
-  //           expect.objectContaining({
-  //             comment_id: 14,
-  //             body: "ADDED COMMENT TEST",
-  //             votes: 9999,
-  //             author: "TESTER",
-  //             review_id: 3,
-  //             created_at: expect.any(String),
-  //           })
-  //         );
-  //         //Check that the body sent back is the input comment WITH A COMMENT ID
-  //         //New request to check comment is added to list
-  //         return request();
-  //       });
-  //   });
-  // });
+  describe.only("POST", () => {
+    test("status:200, returns the added comment, has a check for ensuring comment is added to db", () => {
+      const reviewId = 2;
+      return request(app)
+        .post(`/api/reviews/${reviewId}/comments`)
+        .send({
+          body: "Test for posting to comments table with already existing author",
+          author: "mallionaire",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment[0]).toEqual(
+            expect.objectContaining({
+              comment_id: 7,
+              body: "Test for posting to comments table with already existing author",
+              votes: 0,
+              author: "mallionaire",
+              review_id: reviewId,
+              created_at: expect.any(String),
+            })
+          );
+          return request(app)
+            .get(`/api/reviews/${reviewId}/comments`)
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments.length).toBe(4);
+            });
+        });
+    });
+  });
 });
