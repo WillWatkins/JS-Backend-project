@@ -332,7 +332,7 @@ describe("/api/reviews/:review_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
-  describe("DELETE", () => {
+  describe.only("DELETE", () => {
     test("status:204, returns nothing but deletes comment from db", () => {
       //If changing the commentId, check the number of comments in the comments table that match the comment_id and update the numberOfComments to be that, otherwise test will fail.
       const commentId = 1;
@@ -345,6 +345,15 @@ describe("/api/comments/:comment_id", () => {
         })
         .then(({ rows }) => {
           expect(rows.length).toBe(numberOfComments);
+        });
+    });
+    test("staus:404, returns an error when the comment_id does not exist", () => {
+      const comment_id = 999;
+      return request(app)
+        .delete(`/api/comments/${comment_id}`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Resource not found");
         });
     });
   });
