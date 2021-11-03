@@ -7,6 +7,25 @@ const testData = require("../db/data/test-data");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("/api", () => {
+  describe("GET", () => {
+    test("status:200, returns a JSON object with a list of endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          body.endpoints.forEach((endpoint) => {
+            expect(endpoint).toEqual(
+              expect.objectContaining({
+                path: expect.any(String),
+                methods: expect.any(Array),
+              })
+            );
+          });
+        });
+    });
+  });
+});
 describe("/api/categories", () => {
   describe("GET", () => {
     test("status:200, returns an array of categories", () => {
@@ -313,7 +332,7 @@ describe("/api/reviews/:review_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
-  describe.only("DELETE", () => {
+  describe("DELETE", () => {
     test("status:204, returns nothing but deletes comment from db", () => {
       //If changing the commentId, check the number of comments in the comments table that match the comment_id and update the numberOfComments to be that, otherwise test will fail.
       const commentId = 1;
