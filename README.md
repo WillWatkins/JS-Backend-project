@@ -129,7 +129,7 @@ All of your endpoints should send the responses specified below in an **object**
 
 ### Essential Routes
 
-#### **GET /api/categories**
+#### **GET /api/categories** **COMPLETE**
 
 Responds with:
 
@@ -139,7 +139,7 @@ Responds with:
 
 ---
 
-#### **GET /api/reviews/:review_id**
+#### **GET /api/reviews/:review_id** **COMPLETE**
 
 Responds with:
 
@@ -158,7 +158,7 @@ Responds with:
 
 ---
 
-#### **PATCH /api/reviews/:review_id**
+#### **PATCH /api/reviews/:review_id** **COMPLETE**
 
 Request body accepts:
 
@@ -178,7 +178,7 @@ Responds with:
 
 ---
 
-#### **GET /api/reviews**
+#### **GET /api/reviews** **COMPLETE**
 
 Responds with:
 
@@ -200,7 +200,7 @@ Should accept queries:
 
 ---
 
-#### **GET /api/reviews/:review_id/comments**
+#### **GET /api/reviews/:review_id/comments** **COMPLETE**
 
 Responds with:
 
@@ -213,7 +213,7 @@ Responds with:
 
 ---
 
-#### **POST /api/reviews/:review_id/comments**
+#### **POST /api/reviews/:review_id/comments** **COMPLETE**
 
 Request body accepts:
 
@@ -227,7 +227,7 @@ Responds with:
 
 ---
 
-#### **DELETE /api/comments/:comment_id**
+#### **DELETE /api/comments/:comment_id** **COMPLETE**
 
 Should:
 

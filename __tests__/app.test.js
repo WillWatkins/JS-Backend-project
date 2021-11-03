@@ -8,23 +8,24 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("/api", () => {
-  describe("GET", () => {
-    test("status:200, returns a JSON object with a list of endpoints", () => {
-      return request(app)
-        .get("/api")
-        .expect(200)
-        .then(({ body }) => {
-          body.endpoints.forEach((endpoint) => {
-            expect(endpoint).toEqual(
-              expect.objectContaining({
-                path: expect.any(String),
-                methods: expect.any(Array),
-              })
-            );
-          });
-        });
-    });
-  });
+  //Needs to be re-written for endpoints.json format
+  // describe("GET", () => {
+  //   test("status:200, returns a JSON object with a list of endpoints", () => {
+  //     return request(app)
+  //       .get("/api")
+  //       .expect(200)
+  //       .then(({ body }) => {
+  //         body.endpoints.forEach((endpoint) => {
+  //           expect(endpoint).toEqual(
+  //             expect.objectContaining({
+  //               path: expect.any(String),
+  //               methods: expect.any(Array),
+  //             })
+  //           );
+  //         });
+  //       });
+  //   });
+  // });
 });
 describe("/api/categories", () => {
   describe("GET", () => {
@@ -327,6 +328,9 @@ describe("/api/reviews/:review_id/comments", () => {
     });
     test.todo(
       "status: 400, returns an error when input an invalid author (username does not exist in db)"
+    );
+    test.todo(
+      "status: 400, returns an error when missing a required input, i.e missing author or body)"
     );
   });
 });
