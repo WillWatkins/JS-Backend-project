@@ -335,7 +335,7 @@ describe("/api/reviews/:review_id/comments", () => {
   });
 });
 describe("/api/comments/:comment_id", () => {
-  describe.only("DELETE", () => {
+  describe("DELETE", () => {
     test("status:204, returns nothing but deletes comment from db", () => {
       //If changing the commentId, check the number of comments in the comments table that match the comment_id and update the numberOfComments to be that, otherwise test will fail.
       const commentId = 1;
@@ -363,16 +363,37 @@ describe("/api/comments/:comment_id", () => {
 });
 describe("/api/users", () => {
   describe("GET", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.usernames.length).toBe(4);
-        body.usernames.forEach((username) => {
-          expect(username).toEqual(
-            expect.objectContaining({ username: expect.any(String) })
+    test("status:200, returns an array of the users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users.length).toBe(4);
+          body.users.forEach((user) => {
+            expect(user).toEqual(
+              expect.objectContaining({ username: expect.any(String) })
+            );
+          });
+        });
+    });
+  });
+});
+describe.only("/api/users/:username", () => {
+  describe("GET", () => {
+    test("status:200, returns an array of a single user with their details", () => {
+      const inputUsername = "mallionaire";
+      return request(app)
+        .get(`/api/users/${inputUsername}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user[0]).toEqual(
+            expect.objectContaining({
+              username: `${inputUsername}`,
+              avatar_url: expect.any(String),
+              name: expect.any(String),
+            })
           );
         });
-      });
+    });
   });
 });
