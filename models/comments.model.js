@@ -15,6 +15,9 @@ exports.deleteCommentByCommentId = (id) => {
 };
 
 exports.updateCommentVotesByIdInModel = (commentId, vote) => {
+  if (vote > 1 || vote < -1) {
+    return Promise.reject({ status: 404, message: "Bad request" });
+  }
   let queryString = `
   UPDATE comments
   SET votes = votes + $1

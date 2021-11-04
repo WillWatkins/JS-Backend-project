@@ -361,7 +361,7 @@ describe("/api/comments/:comment_id", () => {
     });
   });
   describe.only("PATCH", () => {
-    test("status:200, returns an array with a single object of the updated comment", () => {
+    test("status:200, returns an array with a single object of the updated comment when incremented or decremented", () => {
       const commentId = 1;
       const vote = { inc_votes: 1 };
       return request(app)
@@ -379,6 +379,36 @@ describe("/api/comments/:comment_id", () => {
               comment_id: commentId,
             })
           );
+        });
+    });
+    test("status:200, returns an array with a single object of the updated comment when decremented", () => {
+      const commentId = 1;
+      const vote = { inc_votes: -1 };
+      return request(app)
+        .patch(`/api/comments/${commentId}`)
+        .send(vote)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment[0]).toEqual(
+            expect.objectContaining({
+              body: expect.any(String),
+              votes: 15,
+              author: expect.any(String),
+              review_id: expect.any(Number),
+              created_at: expect.any(String),
+              comment_id: commentId,
+            })
+          );
+        });
+    });
+    test("status:400, returns an error when the user tries to increment the votes by more than 1", () => {
+      const votes = { inc_votes: 2 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(votes)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
