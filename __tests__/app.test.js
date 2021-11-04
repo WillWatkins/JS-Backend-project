@@ -360,6 +360,9 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  // describe("PATCH", () => {
+  //   test("status")
+  // })
 });
 describe("/api/users", () => {
   describe("GET", () => {
@@ -393,6 +396,15 @@ describe.only("/api/users/:username", () => {
               name: expect.any(String),
             })
           );
+        });
+    });
+    test("status: 404, returns not found when input a username that does not exist", () => {
+      const invalidUsername = "InvalidUsername";
+      return request(app)
+        .get(`/api/users/${invalidUsername}`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
         });
     });
   });

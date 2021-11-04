@@ -13,6 +13,9 @@ exports.selectUser = (username) => {
     WHERE username =$1`;
 
   return db.query(queryString, [username]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return Promise.reject({ status: 404, message: "Not found" });
+    }
     return rows;
   });
 };
