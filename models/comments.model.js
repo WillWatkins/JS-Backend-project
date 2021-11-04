@@ -13,3 +13,15 @@ exports.deleteCommentByCommentId = (id) => {
   });
   //Nothing to return as delete method cannot return a body
 };
+
+exports.updateCommentVotesByIdInModel = (commentId, vote) => {
+  let queryString = `
+  UPDATE comments
+  SET votes = votes + $1
+  WHERE comment_id = $2
+  RETURNING*;`;
+
+  return db.query(queryString, [vote, commentId]).then(({ rows }) => {
+    return rows;
+  });
+};

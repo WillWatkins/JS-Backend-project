@@ -360,9 +360,28 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
-  // describe("PATCH", () => {
-  //   test("status")
-  // })
+  describe.only("PATCH", () => {
+    test("status:200, returns an array with a single object of the updated comment", () => {
+      const commentId = 1;
+      const vote = { inc_votes: 1 };
+      return request(app)
+        .patch(`/api/comments/${commentId}`)
+        .send(vote)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment[0]).toEqual(
+            expect.objectContaining({
+              body: expect.any(String),
+              votes: 17,
+              author: expect.any(String),
+              review_id: expect.any(Number),
+              created_at: expect.any(String),
+              comment_id: commentId,
+            })
+          );
+        });
+    });
+  });
 });
 describe("/api/users", () => {
   describe("GET", () => {
@@ -381,7 +400,7 @@ describe("/api/users", () => {
     });
   });
 });
-describe.only("/api/users/:username", () => {
+describe("/api/users/:username", () => {
   describe("GET", () => {
     test("status:200, returns an array of a single user with their details", () => {
       const inputUsername = "mallionaire";
