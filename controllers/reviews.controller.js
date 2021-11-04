@@ -12,9 +12,7 @@ exports.getReviewById = (req, res, next) => {
     .then((review) => {
       res.status(200).send({ review });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.updateVotesById = (req, res, next) => {
@@ -24,9 +22,7 @@ exports.updateVotesById = (req, res, next) => {
     .then((review) => {
       res.status(200).send({ review });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getReviews = (req, res, next) => {
