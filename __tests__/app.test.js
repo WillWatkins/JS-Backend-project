@@ -7,6 +7,16 @@ const testData = require("../db/data/test-data");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("/NotValid", () => {
+  test("status:500, returns an error message when passed an invalid path", () => {
+    return request(app)
+      .get("/invalid_path")
+      .expect(500)
+      .then(({ body }) => {
+        expect(body.message).toBe("Internal server error");
+      });
+  });
+});
 describe("/api", () => {
   describe("GET", () => {
     test("status:200, returns a JSON object with a list of endpoints", () => {
@@ -41,7 +51,7 @@ describe("/api/categories", () => {
   });
 });
 describe("/api/reviews", () => {
-  describe.only("GET", () => {
+  describe("GET", () => {
     test("status:200, returns an array of reviews", () => {
       return request(app)
         .get("/api/reviews")
@@ -185,6 +195,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
+    test.todo("add total_count property");
   });
 });
 describe("/api/reviews/:review_id", () => {
