@@ -334,7 +334,6 @@ describe("/api/reviews/:review_id/comments", () => {
     );
   });
 });
-
 describe("/api/comments/:comment_id", () => {
   describe.only("DELETE", () => {
     test("status:204, returns nothing but deletes comment from db", () => {
@@ -360,5 +359,20 @@ describe("/api/comments/:comment_id", () => {
           expect(body.message).toBe("Resource not found");
         });
     });
+  });
+});
+describe("/api/users", () => {
+  describe("GET", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.usernames.length).toBe(4);
+        body.usernames.forEach((username) => {
+          expect(username).toEqual(
+            expect.objectContaining({ username: expect.any(String) })
+          );
+        });
+      });
   });
 });
