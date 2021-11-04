@@ -51,6 +51,7 @@ exports.selectReviews = (
   if (!["asc", "ASC", "desc", "DESC"].includes(order)) {
     return Promise.reject({ status: 400, message: "Bad request" });
   }
+  queryParams.push(limit);
 
   //Cast a function output with :: e.g. below
   let queryString = `SELECT reviews.*, COUNT(comments.review_id)::int AS comment_count
@@ -59,12 +60,11 @@ exports.selectReviews = (
 
   if (category) {
     queryParams.push(category);
-    queryString += ` WHERE category=$1`;
+    queryString += ` WHERE category=$2`;
   }
 
-  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order} LIMIT ${limit}`;
+  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order} LIMIT $1`;
 
-  console.log(queryString);
   return db.query(queryString, queryParams).then(({ rows }) => {
     if (rows.length < 1) {
       return checkExists("categories", "slug", category);

@@ -112,7 +112,7 @@ describe("/api/reviews", () => {
           });
         });
     });
-    test("status: 404, returns an error when input an invalid category", () => {
+    test("status:404, returns an error when input an invalid category", () => {
       const invalidCategory = "NotValid";
       return request(app)
         .get(`/api/reviews?category=${invalidCategory}`)
@@ -121,7 +121,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Resource not found");
         });
     });
-    test("status: 200, returns an empty array when passed a category that exists but has no reviews in that category", () => {
+    test("status:200, returns an empty array when passed a category that exists but has no reviews in that category", () => {
       const category = "children's games";
       return request(app)
         .get(`/api/reviews?category=${category}`)
@@ -145,6 +145,15 @@ describe("/api/reviews", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews.length).toBe(limit);
+        });
+    });
+    test("status:400, returns an error when provided an invalid limit query", () => {
+      const notValidLimit = "NotValidLimit";
+      return request(app)
+        .get(`/api/reviews?limit=${notValidLimit}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
