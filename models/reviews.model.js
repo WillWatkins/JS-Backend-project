@@ -1,3 +1,4 @@
+const { off } = require("superagent");
 const db = require("../db/connection");
 const { checkExists } = require("../utils/utils");
 
@@ -33,7 +34,8 @@ exports.selectReviews = (
   sort_by = "created_at",
   order = "ASC",
   category,
-  limit = 10
+  limit = 10,
+  page = 1
 ) => {
   const queryParams = [];
   if (
@@ -52,6 +54,8 @@ exports.selectReviews = (
     return Promise.reject({ status: 400, message: "Bad request" });
   }
   queryParams.push(limit);
+  const offset = limit * (page - 1);
+  queryParams.push(offset);
 
   //Cast a function output with :: e.g. below
   let queryString = `SELECT reviews.*, COUNT(comments.review_id)::int AS comment_count
@@ -60,10 +64,9 @@ exports.selectReviews = (
 
   if (category) {
     queryParams.push(category);
-    queryString += ` WHERE category=$2`;
+    queryString += ` WHERE category=$3`;
   }
-
-  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order} LIMIT $1`;
+  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`;
 
   return db.query(queryString, queryParams).then(({ rows }) => {
     if (rows.length < 1) {

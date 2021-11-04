@@ -30,8 +30,8 @@ exports.updateVotesById = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const { sort_by, order, category, limit } = req.query;
-  selectReviews(sort_by, order, category, limit)
+  const { sort_by, order, category, limit, page } = req.query;
+  selectReviews(sort_by, order, category, limit, page)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })

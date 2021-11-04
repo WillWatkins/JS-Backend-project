@@ -156,6 +156,25 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
+    test.only("status:200, returns an array of reviews based on the p (pagination) query", () => {
+      //i.e if page is 1 and limit is 10, returns reviews 1-10.
+      //If page is 2 and limit is 10, returns review 11-20.
+      //Calculated using p and limit! MATHSSSSS
+      const pageNumber = 1;
+      const limit = 6;
+      let lowerLimit = limit * pageNumber - (limit - 1);
+
+      return request(app)
+        .get(`/api/reviews?page=${pageNumber}&limit=${limit}&sort_by=review_id`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews.length).toBe(limit);
+          body.reviews.forEach((review) => {
+            expect(review.review_id).toBe(lowerLimit);
+            lowerLimit++;
+          });
+        });
+    });
   });
 });
 describe("/api/reviews/:review_id", () => {
