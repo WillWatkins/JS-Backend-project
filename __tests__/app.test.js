@@ -8,24 +8,17 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("/api", () => {
-  //Needs to be re-written for endpoints.json format
-  // describe("GET", () => {
-  //   test("status:200, returns a JSON object with a list of endpoints", () => {
-  //     return request(app)
-  //       .get("/api")
-  //       .expect(200)
-  //       .then(({ body }) => {
-  //         body.endpoints.forEach((endpoint) => {
-  //           expect(endpoint).toEqual(
-  //             expect.objectContaining({
-  //               path: expect.any(String),
-  //               methods: expect.any(Array),
-  //             })
-  //           );
-  //         });
-  //       });
-  //   });
-  // });
+  describe("GET", () => {
+    test("status:200, returns a JSON object with a list of endpoints", () => {
+      const myEndpoints = require("../endpoints.json");
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.endpoints).toEqual(myEndpoints);
+        });
+    });
+  });
 });
 describe("/api/categories", () => {
   describe("GET", () => {
@@ -360,7 +353,7 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
-  describe.only("PATCH", () => {
+  describe("PATCH", () => {
     test("status:200, returns an array with a single object of the updated comment when incremented or decremented", () => {
       const commentId = 1;
       const vote = { inc_votes: 1 };
