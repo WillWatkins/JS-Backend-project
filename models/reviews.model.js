@@ -29,7 +29,12 @@ exports.updateVotesInModelById = (id, voteChange) => {
   });
 };
 
-exports.selectReviews = (sort_by = "created_at", order = "ASC", category) => {
+exports.selectReviews = (
+  sort_by = "created_at",
+  order = "ASC",
+  category,
+  limit = 10
+) => {
   const queryParams = [];
   if (
     ![
@@ -57,8 +62,9 @@ exports.selectReviews = (sort_by = "created_at", order = "ASC", category) => {
     queryString += ` WHERE category=$1`;
   }
 
-  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}`;
+  queryString += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order} LIMIT ${limit}`;
 
+  console.log(queryString);
   return db.query(queryString, queryParams).then(({ rows }) => {
     if (rows.length < 1) {
       return checkExists("categories", "slug", category);

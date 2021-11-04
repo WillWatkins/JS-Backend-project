@@ -41,13 +41,12 @@ describe("/api/categories", () => {
   });
 });
 describe("/api/reviews", () => {
-  describe("GET", () => {
+  describe.only("GET", () => {
     test("status:200, returns an array of reviews", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          expect(body.reviews.length).toBe(13);
           body.reviews.forEach((review) => {
             expect(review).toEqual(
               expect.objectContaining({
@@ -129,6 +128,23 @@ describe("/api/reviews", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews).toEqual([]);
+        });
+    });
+    test("status:200, returns an array of reviews limited to 10 reviews when provided no limit query", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews.length).toBe(10);
+        });
+    });
+    test("status:200, returns an array of reviews with a specified limit", () => {
+      const limit = 5;
+      return request(app)
+        .get("/api/reviews?limit=5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews.length).toBe(limit);
         });
     });
   });
