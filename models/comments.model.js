@@ -28,3 +28,26 @@ exports.updateCommentVotesByIdInModel = (commentId, vote) => {
     return rows;
   });
 };
+
+exports.selectCommentsByReviewId = (id) => {
+  let queryString = `SELECT * FROM comments WHERE review_id = $1`;
+  return db.query(queryString, [id]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return checkExists("reviews", "review_id", id);
+    }
+    return rows;
+  });
+};
+
+exports.postCommentToReview = (id, comment) => {
+  const { body, author } = comment;
+
+  const queryString = `
+      INSERT INTO comments (body, author, review_id)
+      VALUES ($1 ,$2, $3) 
+      RETURNING*;`;
+
+  return db.query(queryString, [body, author, id]).then(({ rows }) => {
+    return rows;
+  });
+};

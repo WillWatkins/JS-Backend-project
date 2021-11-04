@@ -3,9 +3,12 @@ const {
   getReviewById,
   updateVotesById,
   getReviews,
+} = require("../controllers/reviews.controller.js");
+
+const {
   addCommentToReview,
   getCommentsByReviewId,
-} = require("../controllers/reviews.controller.js");
+} = require("../controllers/comments.controller");
 
 reviewsRouter.route("/").get(getReviews);
 
