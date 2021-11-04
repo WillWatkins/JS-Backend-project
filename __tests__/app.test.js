@@ -156,7 +156,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test.only("status:200, returns an array of reviews based on the p (pagination) query", () => {
+    test("status:200, returns an array of reviews based on the page (pagination) query", () => {
       //i.e if page is 1 and limit is 10, returns reviews 1-10.
       //If page is 2 and limit is 10, returns review 11-20.
       //Calculated using p and limit! MATHSSSSS
@@ -173,6 +173,16 @@ describe("/api/reviews", () => {
             expect(review.review_id).toBe(lowerLimit);
             lowerLimit++;
           });
+        });
+    });
+    test("status:400, returns an error when passed an invalid page query", () => {
+      const page = "InvalidPageNumber";
+      const limit = 5;
+      return request(app)
+        .get(`/api/reviews?page=${page}&limit=${limit}&sort_by=review_id`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });

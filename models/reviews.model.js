@@ -55,6 +55,7 @@ exports.selectReviews = (
   }
   queryParams.push(limit);
   const offset = limit * (page - 1);
+  console.log(offset);
   queryParams.push(offset);
 
   //Cast a function output with :: e.g. below
