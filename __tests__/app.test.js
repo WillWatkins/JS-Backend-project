@@ -98,6 +98,7 @@ describe("/api/reviews", () => {
         .get("/api/reviews?order=desc")
         .expect(200)
         .then(({ body }) => {
+          console.log(body.reviews);
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -110,7 +111,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test("status:200, returns an array of reviews filtered to a category", () => {
+    test.only("status:200, returns an array of reviews filtered to a category", () => {
       const category = "dexterity";
       return request(app)
         .get(`/api/reviews?category=${category}`)
@@ -523,6 +524,27 @@ describe("/api/comments/:comment_id", () => {
               comment_id: commentId,
             })
           );
+        });
+    });
+    test("status:400, returns an error when the inc_votes input is invalid i.e. not a number", () => {
+      const vote = { inc_votes: "notAValidInpud" };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(vote)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:400, returns an error when input an invalid comment_id", () => {
+      const invalidId = "InvalidId";
+      const vote = { inc_votes: 1 };
+      return request(app)
+        .patch(`/api/comments/${invalidId}`)
+        .send(vote)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });

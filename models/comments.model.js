@@ -15,7 +15,7 @@ exports.deleteCommentByCommentId = (id) => {
 };
 
 exports.updateCommentVotesByIdInModel = (commentId, vote = 0) => {
-  if (vote > 1 || vote < -1) {
+  if (typeof vote !== "number" || vote > 1 || vote < -1) {
     return Promise.reject({ status: 400, message: "Bad request" });
   }
   let queryString = `

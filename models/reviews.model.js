@@ -71,7 +71,6 @@ exports.selectReviews = (
     if (rows.length < 1) {
       return checkExists("categories", "slug", category);
     }
-
     return rows;
   });
 };
