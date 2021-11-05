@@ -4,6 +4,7 @@ const { reviewsRouter } = require("./reviews.router.js");
 const { commentsRouter } = require("./comments.router");
 const { usersRouter } = require("./users.router");
 const { listEndpoints } = require("../controllers/api.controller.js");
+const { invalidMethod } = require("../utils/utils");
 
 apiRouter.use("/categories", categoriesRouter);
 
@@ -13,6 +14,6 @@ apiRouter.use("/comments", commentsRouter);
 
 apiRouter.use("/users", usersRouter);
 
-apiRouter.route("/").get(listEndpoints);
+apiRouter.route("/").get(listEndpoints).all(invalidMethod);
 
 module.exports = { apiRouter };

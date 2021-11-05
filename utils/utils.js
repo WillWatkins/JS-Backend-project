@@ -65,3 +65,7 @@ exports.checkExists = (table, column, value) => {
     }
   });
 };
+
+exports.invalidMethod = (req, res) => {
+  res.status(404).send("Invalid request");
+};
