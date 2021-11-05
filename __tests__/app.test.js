@@ -29,6 +29,16 @@ describe("/api", () => {
         });
     });
   });
+  describe("invalid method request", () => {
+    test("status:404, returns an error when trying to make a request that does not exist yet", () => {
+      return request(app)
+        .delete("/api")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+  });
 });
 describe("/api/categories", () => {
   describe("GET", () => {
@@ -111,7 +121,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test.only("status:200, returns an array of reviews filtered to a category", () => {
+    test("status:200, returns an array of reviews filtered to a category", () => {
       const category = "dexterity";
       return request(app)
         .get(`/api/reviews?category=${category}`)

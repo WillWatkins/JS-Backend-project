@@ -67,5 +67,5 @@ exports.checkExists = (table, column, value) => {
 };
 
 exports.invalidMethod = (req, res) => {
-  res.status(404).send("Invalid request");
+  res.status(404).send({ status: 404, message: "Invalid request" });
 };
