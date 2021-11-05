@@ -25,6 +25,9 @@ exports.updateCommentVotesByIdInModel = (commentId, vote = 0) => {
   RETURNING*;`;
 
   return db.query(queryString, [vote, commentId]).then(({ rows }) => {
+    if (rows.length < 1) {
+      return Promise.reject({ status: 404, message: "Not found" });
+    }
     return rows[0];
   });
 };
@@ -52,6 +55,7 @@ exports.postCommentToReview = (id, comment) => {
       RETURNING comment_id, author, body, votes, created_at;`;
 
   return db.query(queryString, [body, author, id]).then(({ rows }) => {
+    console.log(rows[0]);
     return rows[0];
   });
 };

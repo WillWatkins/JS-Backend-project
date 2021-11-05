@@ -108,7 +108,6 @@ describe("/api/reviews", () => {
         .get("/api/reviews?order=desc")
         .expect(200)
         .then(({ body }) => {
-          console.log(body.reviews);
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -370,8 +369,8 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
   });
-  describe("POST", () => {
-    test("status:200, returns the added comment, has a check for ensuring comment is added to db", () => {
+  describe.only("POST", () => {
+    test("status:201, returns an object of the added comment (checks db for added comment)", () => {
       const reviewId = 2;
       const inputBody = {
         body: "Test for posting to comments table with already existing author",
@@ -427,13 +426,27 @@ describe("/api/reviews/:review_id/comments", () => {
           expect(body.message).toBe("Unprocessable Entity");
         });
     });
-    test("status: 422, returns an error when input an invalid author (username does not exist in db)", () => {
+    test("status:422, returns an error when input an invalid author (username does not exist in db)", () => {
       const inputBody = {
         body: "Test for posting to comments table with already existing author",
         author: "NotAValidUsername",
       };
       return request(app)
         .post("/api/reviews/2/comments")
+        .send(inputBody)
+        .expect(422)
+        .then(({ body }) => {
+          expect(body.message).toBe("Unprocessable Entity");
+        });
+    });
+    test("status:422, returns an error when input a valid username that does not exist", () => {
+      const reviewId = 2;
+      const inputBody = {
+        body: "Test for posting to comments table with already existing author",
+        author: "DoesNotExistInDB",
+      };
+      return request(app)
+        .post(`/api/reviews/${reviewId}/comments`)
         .send(inputBody)
         .expect(422)
         .then(({ body }) => {
@@ -469,7 +482,7 @@ describe("/api/comments/:comment_id", () => {
     });
   });
   describe("PATCH", () => {
-    test("status:200, returns single object of the updated comment when incremented or decremented", () => {
+    test("status:200, returns an object of the updated comment when incremented", () => {
       const commentId = 1;
       const vote = { inc_votes: 1 };
       return request(app)
@@ -489,7 +502,7 @@ describe("/api/comments/:comment_id", () => {
           );
         });
     });
-    test("status:200, returns a single object of the updated comment when decremented", () => {
+    test("status:200, returns an object of the updated comment when decremented", () => {
       const commentId = 1;
       const vote = { inc_votes: -1 };
       return request(app)
@@ -558,6 +571,17 @@ describe("/api/comments/:comment_id", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:404, returns an error when input a valid comment_id that does not exist yet", () => {
+      const commentId = 9999;
+      const vote = { inc_votes: 1 };
+      return request(app)
+        .patch(`/api/comments/${commentId}`)
+        .send(vote)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
         });
     });
   });
