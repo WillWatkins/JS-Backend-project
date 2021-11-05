@@ -81,7 +81,7 @@ describe("/api/reviews", () => {
         .get(`/api/reviews?sort_by=${sortBy}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.reviews).toBeSortedBy(sortBy);
+          expect(body.reviews).toBeSortedBy(sortBy, { descending: true });
         });
     });
     test("status:400, returns an error when input an invalid sory_by", () => {
@@ -175,7 +175,9 @@ describe("/api/reviews", () => {
       let lowerLimit = limit * pageNumber - (limit - 1);
 
       return request(app)
-        .get(`/api/reviews?page=${pageNumber}&limit=${limit}&sort_by=review_id`)
+        .get(
+          `/api/reviews?page=${pageNumber}&limit=${limit}&sort_by=review_id&order=asc`
+        )
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews.length).toBe(limit);
@@ -205,31 +207,27 @@ describe("/api/reviews/:review_id", () => {
         .get("/api/reviews/3")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual({
-            review: [
-              {
-                review_id: 3,
-                title: "Ultimate Werewolf",
-                designer: "Akihisa Okui",
-                owner: "bainesface",
-                review_img_url:
-                  "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                review_body: "We couldn't find the werewolf!",
-                category: "social deduction",
-                created_at: expect.any(String),
-                votes: 5,
-                comment_count: 3,
-              },
-            ],
+          expect(body.review).toEqual({
+            review_id: 3,
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            category: "social deduction",
+            created_at: expect.any(String),
+            votes: 5,
+            comment_count: 3,
           });
         });
     });
-    test("status:400, returns an error if the review does not exist", () => {
+    test("status:404, returns an error if the review does not exist", () => {
       return request(app)
         .get("/api/reviews/9999")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("Invalid path");
+          expect(body.message).toBe("Not found");
         });
     });
     test("status:400, returns an error if input an invalid review_id", () => {
@@ -249,21 +247,17 @@ describe("/api/reviews/:review_id", () => {
         .send(voteChange)
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual({
-            review: [
-              {
-                review_id: 3,
-                title: "Ultimate Werewolf",
-                designer: "Akihisa Okui",
-                owner: "bainesface",
-                review_img_url:
-                  "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                review_body: "We couldn't find the werewolf!",
-                category: "social deduction",
-                created_at: expect.any(String),
-                votes: 8,
-              },
-            ],
+          expect(body.review).toEqual({
+            review_id: 3,
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            category: "social deduction",
+            created_at: expect.any(String),
+            votes: 8,
           });
         });
     });
@@ -276,13 +270,24 @@ describe("/api/reviews/:review_id", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test("status:400, returns an error when provided no body", () => {
+    test("status:200, returns a review object that has not been updated when not passed a request body", () => {
       return request(app)
         .patch("/api/reviews/3")
         .send({})
-        .expect(400)
+        .expect(200)
         .then(({ body }) => {
-          expect(body.message).toBe("Bad request");
+          expect(body.review).toEqual({
+            review_id: 3,
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            category: "social deduction",
+            created_at: expect.any(String),
+            votes: 5,
+          });
         });
     });
     test("status:200, returns a review object with an updated votes and ignores any extra properties on the body", () => {
@@ -292,21 +297,17 @@ describe("/api/reviews/:review_id", () => {
         .send(voteChange)
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual({
-            review: [
-              {
-                review_id: 3,
-                title: "Ultimate Werewolf",
-                designer: "Akihisa Okui",
-                owner: "bainesface",
-                review_img_url:
-                  "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                review_body: "We couldn't find the werewolf!",
-                category: "social deduction",
-                created_at: expect.any(String),
-                votes: 8,
-              },
-            ],
+          expect(body.review).toEqual({
+            review_id: 3,
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            category: "social deduction",
+            created_at: expect.any(String),
+            votes: 8,
           });
         });
     });
@@ -358,21 +359,21 @@ describe("/api/reviews/:review_id/comments", () => {
   describe("POST", () => {
     test("status:200, returns the added comment, has a check for ensuring comment is added to db", () => {
       const reviewId = 2;
+      const inputBody = {
+        body: "Test for posting to comments table with already existing author",
+        author: "mallionaire",
+      };
       return request(app)
         .post(`/api/reviews/${reviewId}/comments`)
-        .send({
-          body: "Test for posting to comments table with already existing author",
-          author: "mallionaire",
-        })
+        .send(inputBody)
         .expect(201)
         .then(({ body }) => {
-          expect(body.comment[0]).toEqual(
+          expect(body.comment).toEqual(
             expect.objectContaining({
               comment_id: 7,
               body: "Test for posting to comments table with already existing author",
               votes: 0,
               author: "mallionaire",
-              review_id: reviewId,
               created_at: expect.any(String),
             })
           );
@@ -384,12 +385,47 @@ describe("/api/reviews/:review_id/comments", () => {
             });
         });
     });
-    test.todo(
-      "status: 400, returns an error when input an invalid author (username does not exist in db)"
-    );
-    test.todo(
-      "status: 400, returns an error when missing a required input, i.e missing author or body)"
-    );
+    test("status:400, returns an error when missing a required input, i.e missing author or body", () => {
+      const reviewId = 2;
+      const inputBody = {
+        body: "Test for posting to comments table with already existing author",
+      };
+
+      return request(app)
+        .post(`/api/reviews/${reviewId}/comments`)
+        .send(inputBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:404, returns an error when passed a valid review_id but does not exist yet", () => {
+      const validIdThatDoesNotExistYet = 999;
+      const inputBody = {
+        body: "Test for posting to comments table with already existing author",
+        author: "mallionaire",
+      };
+      return request(app)
+        .post(`/api/reviews/${validIdThatDoesNotExistYet}/comments`)
+        .send(inputBody)
+        .expect(422)
+        .then(({ body }) => {
+          expect(body.message).toBe("Unprocessable Entity");
+        });
+    });
+    test("status: 422, returns an error when input an invalid author (username does not exist in db)", () => {
+      const inputBody = {
+        body: "Test for posting to comments table with already existing author",
+        author: "NotAValidUsername",
+      };
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(inputBody)
+        .expect(422)
+        .then(({ body }) => {
+          expect(body.message).toBe("Unprocessable Entity");
+        });
+    });
   });
 });
 describe("/api/comments/:comment_id", () => {
@@ -408,7 +444,7 @@ describe("/api/comments/:comment_id", () => {
           expect(rows.length).toBe(numberOfComments);
         });
     });
-    test("staus:404, returns an error when the comment_id does not exist", () => {
+    test("status:404, returns an error when the comment_id does not exist", () => {
       const comment_id = 999;
       return request(app)
         .delete(`/api/comments/${comment_id}`)
@@ -505,7 +541,7 @@ describe("/api/users/:username", () => {
           );
         });
     });
-    test("status: 404, returns not found when input a username that does not exist", () => {
+    test("status:404, returns not found when input a username that does not exist", () => {
       const invalidUsername = "InvalidUsername";
       return request(app)
         .get(`/api/users/${invalidUsername}`)

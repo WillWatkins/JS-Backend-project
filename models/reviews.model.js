@@ -1,4 +1,3 @@
-const { off } = require("superagent");
 const db = require("../db/connection");
 const { checkExists } = require("../utils/utils");
 
@@ -10,13 +9,13 @@ exports.selectReviewById = (id) => {
     GROUP BY reviews.review_id;`;
   return db.query(queryString, [id]).then(({ rows }) => {
     if (rows.length < 1) {
-      return Promise.reject({ status: 400, message: "Invalid path" });
+      return Promise.reject({ status: 404, message: "Not found" });
     }
-    return rows;
+    return rows[0];
   });
 };
 
-exports.updateVotesInModelById = (id, voteChange) => {
+exports.updateVotesInModelById = (id, voteChange = 0) => {
   if (!id.match(/[0-9]*/) || typeof voteChange !== "number") {
     return Promise.reject({ status: 400, message: "Bad request" });
   }
@@ -26,13 +25,13 @@ exports.updateVotesInModelById = (id, voteChange) => {
   WHERE review_id = ${id}
   RETURNING*;`;
   return db.query(queryString).then(({ rows }) => {
-    return rows;
+    return rows[0];
   });
 };
 
 exports.selectReviews = (
   sort_by = "created_at",
-  order = "ASC",
+  order = "DESC",
   category,
   limit = 10,
   page = 1
@@ -72,29 +71,7 @@ exports.selectReviews = (
     if (rows.length < 1) {
       return checkExists("categories", "slug", category);
     }
-    return rows;
-  });
-};
 
-exports.selectCommentsByReviewId = (id) => {
-  let queryString = `SELECT * FROM comments WHERE review_id = $1`;
-  return db.query(queryString, [id]).then(({ rows }) => {
-    if (rows.length < 1) {
-      return checkExists("reviews", "review_id", id);
-    }
-    return rows;
-  });
-};
-
-exports.postCommentToReview = (id, comment) => {
-  const { body, author } = comment;
-
-  const queryString = `
-      INSERT INTO comments (body, author, review_id)
-      VALUES ($1 ,$2, $3) 
-      RETURNING*;`;
-
-  return db.query(queryString, [body, author, id]).then(({ rows }) => {
     return rows;
   });
 };
