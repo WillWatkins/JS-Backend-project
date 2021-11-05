@@ -8,6 +8,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
+  console.log(err);
   if (err.code === "23503") {
     res.status(422).send({ message: "Unprocessable Entity" });
   } else if (err.code) {

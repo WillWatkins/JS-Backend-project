@@ -3,6 +3,7 @@ const {
   getReviewById,
   updateVotesById,
   getReviews,
+  postReview,
 } = require("../controllers/reviews.controller.js");
 const { invalidMethod } = require("../utils/utils");
 
@@ -11,7 +12,7 @@ const {
   getCommentsByReviewId,
 } = require("../controllers/comments.controller");
 
-reviewsRouter.route("/").get(getReviews).all(invalidMethod);
+reviewsRouter.route("/").get(getReviews).post(postReview).all(invalidMethod);
 
 reviewsRouter
   .route("/:review_id")

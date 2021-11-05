@@ -209,8 +209,35 @@ describe("/api/reviews", () => {
     });
     test.todo("add total_count property");
   });
-  describe("POST", () => {
-    //UP TO HERE
+  describe.only("POST", () => {
+    test("status:201, returns a review object", () => {
+      const reviewInput = {
+        owner: "mallionaire",
+        title: "A title for my review",
+        review_body: "A body for my review",
+        designer: "A designer for my review",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(reviewInput)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toEqual(
+            expect.objectContaining({
+              owner: "mallionaire",
+              title: "A title for my review",
+              review_body: "A body for my review",
+              designer: "A designer for my review",
+              category: "euro game",
+              review_id: 14,
+              votes: 0,
+              created_at: expect.any(String),
+              comment_count: 0,
+            })
+          );
+        });
+    });
   });
 });
 describe("/api/reviews/:review_id", () => {
@@ -369,7 +396,7 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
   });
-  describe.only("POST", () => {
+  describe("POST", () => {
     test("status:201, returns an object of the added comment (checks db for added comment)", () => {
       const reviewId = 2;
       const inputBody = {

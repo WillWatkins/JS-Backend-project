@@ -74,3 +74,19 @@ exports.selectReviews = (
     return rows;
   });
 };
+
+exports.insertReview = (inputReview) => {
+  const { owner, title, review_body, designer, category } = inputReview;
+
+  let queryString = `
+  INSERT INTO reviews
+  (owner, title, review_body, designer, category)
+  VALUES
+  ($1, $2, $3, $4, $5)
+  RETURNING*`;
+  return db
+    .query(queryString, [owner, title, review_body, designer, category])
+    .then(({ rows }) => {
+      return this.selectReviewById(rows[0].review_id);
+    });
+};
