@@ -14,9 +14,9 @@ exports.deleteCommentByCommentId = (id) => {
   //Nothing to return as delete method cannot return a body
 };
 
-exports.updateCommentVotesByIdInModel = (commentId, vote) => {
+exports.updateCommentVotesByIdInModel = (commentId, vote = 0) => {
   if (vote > 1 || vote < -1) {
-    return Promise.reject({ status: 404, message: "Bad request" });
+    return Promise.reject({ status: 400, message: "Bad request" });
   }
   let queryString = `
   UPDATE comments
@@ -25,7 +25,7 @@ exports.updateCommentVotesByIdInModel = (commentId, vote) => {
   RETURNING*;`;
 
   return db.query(queryString, [vote, commentId]).then(({ rows }) => {
-    return rows;
+    return rows[0];
   });
 };
 

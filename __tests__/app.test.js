@@ -7,13 +7,13 @@ const testData = require("../db/data/test-data");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("/NotValid", () => {
-  test("status:500, returns an error message when passed an invalid path", () => {
+describe("/NotValidPath", () => {
+  test("status:404, returns an error message when passed an invalid path", () => {
     return request(app)
       .get("/invalid_path")
-      .expect(500)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Internal server error");
+        expect(body.message).toBe("Not found");
       });
   });
 });
@@ -455,7 +455,7 @@ describe("/api/comments/:comment_id", () => {
     });
   });
   describe("PATCH", () => {
-    test("status:200, returns an array with a single object of the updated comment when incremented or decremented", () => {
+    test("status:200, returns single object of the updated comment when incremented or decremented", () => {
       const commentId = 1;
       const vote = { inc_votes: 1 };
       return request(app)
@@ -463,7 +463,7 @@ describe("/api/comments/:comment_id", () => {
         .send(vote)
         .expect(200)
         .then(({ body }) => {
-          expect(body.comment[0]).toEqual(
+          expect(body.comment).toEqual(
             expect.objectContaining({
               body: expect.any(String),
               votes: 17,
@@ -475,7 +475,7 @@ describe("/api/comments/:comment_id", () => {
           );
         });
     });
-    test("status:200, returns an array with a single object of the updated comment when decremented", () => {
+    test("status:200, returns a single object of the updated comment when decremented", () => {
       const commentId = 1;
       const vote = { inc_votes: -1 };
       return request(app)
@@ -483,7 +483,7 @@ describe("/api/comments/:comment_id", () => {
         .send(vote)
         .expect(200)
         .then(({ body }) => {
-          expect(body.comment[0]).toEqual(
+          expect(body.comment).toEqual(
             expect.objectContaining({
               body: expect.any(String),
               votes: 15,
@@ -500,9 +500,29 @@ describe("/api/comments/:comment_id", () => {
       return request(app)
         .patch("/api/comments/1")
         .send(votes)
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:200, returns an object with no changes, i.e. vote is not changed in the db", () => {
+      const commentId = 1;
+      const vote = {};
+      return request(app)
+        .patch(`/api/comments/${commentId}`)
+        .send(vote)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual(
+            expect.objectContaining({
+              body: expect.any(String),
+              votes: 16,
+              author: expect.any(String),
+              review_id: expect.any(Number),
+              created_at: expect.any(String),
+              comment_id: commentId,
+            })
+          );
         });
     });
   });
@@ -527,14 +547,14 @@ describe("/api/users", () => {
 describe("/api/users/:username", () => {
   describe("GET", () => {
     test("status:200, returns an array of a single user with their details", () => {
-      const inputUsername = "mallionaire";
+      const inputUsername = "bainesface";
       return request(app)
         .get(`/api/users/${inputUsername}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.user[0]).toEqual(
+          expect(body.user).toEqual(
             expect.objectContaining({
-              username: `${inputUsername}`,
+              username: inputUsername,
               avatar_url: expect.any(String),
               name: expect.any(String),
             })

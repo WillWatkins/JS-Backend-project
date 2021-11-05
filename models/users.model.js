@@ -16,6 +16,6 @@ exports.selectUser = (username) => {
     if (rows.length < 1) {
       return Promise.reject({ status: 404, message: "Not found" });
     }
-    return rows;
+    return rows[0];
   });
 };

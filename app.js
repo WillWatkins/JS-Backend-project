@@ -16,7 +16,7 @@ app.use(handlePsqlErrors);
 app.use(handle500);
 
 app.all("/*", (req, res) => {
-  res.status(500).send({ status: 500, message: "Internal server error" });
+  res.status(404).send({ status: 500, message: "Not found" });
 });
 
 module.exports = app;
