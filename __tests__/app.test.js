@@ -209,7 +209,7 @@ describe("/api/reviews", () => {
     });
     test.todo("add total_count property");
   });
-  describe.only("POST", () => {
+  describe("POST", () => {
     test("status:201, returns a review object", () => {
       const reviewInput = {
         owner: "mallionaire",
@@ -236,6 +236,37 @@ describe("/api/reviews", () => {
               comment_count: 0,
             })
           );
+        });
+    });
+    test("status:400, returns an error when missing required input values", () => {
+      const reviewInput = {
+        title: "A title for my review",
+        review_body: "A body for my review",
+        designer: "A designer for my review",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(reviewInput)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("status:422, returns an error when input a valid value but does not exist in db (e.g. owner does not match a username)", () => {
+      const reviewInput = {
+        owner: "NotAValidAuthor",
+        title: "A title for my review",
+        review_body: "A body for my review",
+        designer: "A designer for my review",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(reviewInput)
+        .expect(422)
+        .then(({ body }) => {
+          expect(body.message).toBe("Unprocessable entity");
         });
     });
   });
@@ -450,7 +481,7 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(inputBody)
         .expect(422)
         .then(({ body }) => {
-          expect(body.message).toBe("Unprocessable Entity");
+          expect(body.message).toBe("Unprocessable entity");
         });
     });
     test("status:422, returns an error when input an invalid author (username does not exist in db)", () => {
@@ -463,7 +494,7 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(inputBody)
         .expect(422)
         .then(({ body }) => {
-          expect(body.message).toBe("Unprocessable Entity");
+          expect(body.message).toBe("Unprocessable entity");
         });
     });
     test("status:422, returns an error when input a valid username that does not exist", () => {
@@ -477,7 +508,7 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(inputBody)
         .expect(422)
         .then(({ body }) => {
-          expect(body.message).toBe("Unprocessable Entity");
+          expect(body.message).toBe("Unprocessable entity");
         });
     });
   });
