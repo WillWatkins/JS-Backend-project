@@ -253,7 +253,7 @@ describe("/api/reviews", () => {
           expect(body.message).toBe("Bad request");
         });
     });
-    test("status:422, returns an error when input a valid value but does not exist in db (e.g. owner does not match a username)", () => {
+    test("status:422, returns an error when input a valid value but does not exist in db", () => {
       const reviewInput = {
         owner: "NotAValidAuthor",
         title: "A title for my review",

@@ -55,7 +55,6 @@ exports.postCommentToReview = (id, comment) => {
       RETURNING comment_id, author, body, votes, created_at;`;
 
   return db.query(queryString, [body, author, id]).then(({ rows }) => {
-    console.log(rows[0]);
     return rows[0];
   });
 };
