@@ -6,7 +6,9 @@ const {
   handle500,
   handlePsqlErrors,
 } = require("./controllers/errors.controller");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api", apiRouter);
