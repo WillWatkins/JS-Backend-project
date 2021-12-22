@@ -8,7 +8,7 @@ The intention is to build a backend service that mimiks the the functionality of
 
 The hosted api can be found by following this [link](https://js-backend-project.herokuapp.com/api). This will display a list of available endpoints in JSON format.
 
-If you would like to view the front end to this project, created with React, follow this [link]{https://github.com/WillWatkins/front-end-project} or view the live project [here]{https://will-nc-games.netlify.app}.
+If you would like to view the front end to this project, created with React, follow this [link](https://github.com/WillWatkins/front-end-project) or view the live project [here](https://will-nc-games.netlify.app).
 
 #
 
