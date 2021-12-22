@@ -2,11 +2,13 @@
 
 ## Description
 
-This project is an application created for the purpose of accessing application data programmatically.
+This project is an application created for the purpose of accessing data programmatically.
 
-The intention is to build a backend service that mimiks the the functionality of real world services. The API will provide the information to the front end architecture.
+The intention is to build a backend service that mimiks the the functionality of real world services. The API will provide the information to the front end architecture. The API serves reviews, categories, comments and users
 
-The hosted api can be found by following this [link](https://js-backend-project.herokuapp.com/api).
+The hosted api can be found by following this [link](https://js-backend-project.herokuapp.com/api). This will display a list of available endpoints in JSON format.
+
+If you would like to view the front end to this project, created with React, follow this [link]{https://github.com/WillWatkins/front-end-project} or view the live project [here]{https://will-nc-games.netlify.app}.
 
 #
 
@@ -86,15 +88,22 @@ If you wish to know more about jest testing and setting up your own tests, pleas
 
 #
 
-## Summary of current endpoints
+## Summary of available endpoints
 
     GET     /api
 
     GET     /api/categories
 
     GET     /api/reviews
+            queries:
+              sort_by: owner, category, created_at, votes, title, review_id (default: created_at)
+              order_by: asc, desc (default: desc)
+
+              example /api/reviews?sort_by=owner
+
     GET     /api/reviews/review_id
     PATCH   /api/reviews/review_id
+
     GET     /api/reviews/:review_id/comments
     POST    /api/reviews/:review_id/comments
 
